@@ -9,16 +9,5 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-12" style="padding: 10px;">
-        <a href="#" class="list-group-item clearfix" style="margin: 5px; margin-right: 10px; margin-left: 10px;" *ngFor="let contact of contacts">
-            <div class="pull-left">
-                <h4 class="list-group-item-heading">{{contact.name}}</h4>
-            </div>
-            <span class='pull-right'>
-                <img src="{{contact.imageUrl}}" alt="{{contact.name}}" class="img-responsive" style='max-height: 50px;'>
-            </span>
-        </a>
-    </div>
-</div>
+<cms-contact-item *ngFor="let contact of contacts" [contact]="contact" (selectedContact)="onSelected(contact)"></cms-contact-item>
 </div>
