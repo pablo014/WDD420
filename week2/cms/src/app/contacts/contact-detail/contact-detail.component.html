@@ -6,8 +6,8 @@
             <img [src]="contact?.imageUrl" class="img-responsive">
         </div>
         <div class="pull-right btn-toolbar">
-            <button type="button" class="btn btn-primary">Edit</button>
-            <button type="button" class="btn btn-danger">Delete</button>
+            <a routerLink="edit" class="btn btn-primary">Edit</a>
+            <a class="btn btn-danger" (click)="deleteContact()">Delete</a>
         </div>
     </div>
     </div>

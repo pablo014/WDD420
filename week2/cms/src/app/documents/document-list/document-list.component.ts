@@ -13,13 +13,15 @@ export class DocumentListComponent implements OnInit {
   documents: Document[] = []
   constructor(private documentService: DocumentService) { }
 
-  onSelectedDocument(document:Document) {
-    // this.selectedDocumentEvent.emit(document);
-    this.documentService.documentSelectedEvent.emit(document)
-  }
 
   ngOnInit(): void {
     this.documents = this.documentService.getContacts()
+    console.log(this.documents)
+    this.documentService.documentChangedEvent.subscribe((documents:Document[])=> {
+      this.documents = documents
+    })
   }
+
+  
 
 }

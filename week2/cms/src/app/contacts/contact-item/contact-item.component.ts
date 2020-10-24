@@ -9,6 +9,7 @@ import { Contact } from '../contact.model'
 export class ContactItemComponent implements OnInit {
   @Input() contact: Contact;
   @Output() selectedContact = new EventEmitter<Contact>();
+  @Input() index: string
   constructor() { }
 
   onSelected() {

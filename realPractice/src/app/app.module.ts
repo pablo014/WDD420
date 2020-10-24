@@ -4,22 +4,41 @@ import { FormsModule } from '@angular/forms';
 
 
 import { AppComponent } from './app.component';
-import { AccountComponent } from './account/account.component';
-import { NewAccountComponent } from './new-account/new-account.component';
-import { AccountsService } from './accounts.service';
-import { LoggingService } from './logging.service';
+import { HomeComponent } from './home/home.component';
+import { UsersComponent } from './users/users.component';
+import { ServersComponent } from './servers/servers.component';
+import { UserComponent } from './users/user/user.component';
+import { EditServerComponent } from './servers/edit-server/edit-server.component';
+import { ServerComponent } from './servers/server/server.component';
+import { ServersService } from './servers/servers.service';
+import { PageNotFouncComponent } from './page-not-founc/page-not-founc.component';
+import { AppRoutingModule } from './app-routing.module';
+import { AuthService } from './auth.service';
+import { AuthGuard } from './auth-guard.service';
+import { canDeactivateGuard } from './servers/edit-server/canDeactivateGuard.service';
+import { ErrorComponent } from './error/error.component';
+import { serverResolver } from './servers/server/server-resolver.service';
+
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    AccountComponent,
-    NewAccountComponent
+    HomeComponent,
+    UsersComponent,
+    ServersComponent,
+    UserComponent,
+    EditServerComponent,
+    ServerComponent,
+    PageNotFouncComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    AppRoutingModule
   ],
-  providers: [AccountsService, LoggingService],
+  providers: [ServersService, AuthService, AuthGuard, canDeactivateGuard, serverResolver],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

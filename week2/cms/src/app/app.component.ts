@@ -7,8 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'cms';
-  currentView = 'Contacts';
-  onNavigate(selectedView:string) {
-    this.currentView = selectedView
-  }
+  
 }
