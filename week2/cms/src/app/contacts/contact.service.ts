@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import {Contact} from './contact.model'
@@ -12,9 +13,19 @@ export class ContactService {
   maxContactId: number
 
   contacts: Contact[] = []
-  constructor() { 
-    this.contacts = MOCKCONTACTS
-    this.maxContactId = this.getMaxId()
+  constructor(private http: HttpClient ) { 
+    // this.contacts = MOCKCONTACTS
+    // this.maxContactId = this.getMaxId()
+    this.http.get('https://wdd430-87992.firebaseio.com/contacts.json').subscribe(
+      (contacts: Contact[]) => {
+        this.contacts = contacts
+        this.maxContactId = this.getMaxId()
+        this.contacts.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
+        this.contactChangedEvent.next(this.contacts.slice())
+      }, (error)=>{
+        console.log(error)
+      }
+    )
   }
   getContacts() {
     return this.contacts.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0).slice()
@@ -36,7 +47,7 @@ export class ContactService {
       return;
    }
    this.contacts.splice(pos, 1);
-   this.contactChangedEvent.next(this.contacts.slice());
+   this.storeContacts()
   }
   getMaxId(): number {
     var maxId = 0;
@@ -56,8 +67,7 @@ export class ContactService {
     this.maxContactId++;
     newContact.id = this.maxContactId.toString()
     this.contacts.push(newContact)
-    var contactsListClone = this.contacts.slice()
-    this.contactChangedEvent.next(contactsListClone)
+    this.storeContacts()
   }
   updateContact(originalContact: Contact, newContact: Contact) {
     if(!originalContact || ! newContact) {
@@ -69,7 +79,12 @@ export class ContactService {
     }
     newContact.id = originalContact.id
     this.contacts[pos] = newContact
-    var contactsListClone = this.contacts.slice()
-    this.contactChangedEvent.next(contactsListClone)
+    this.storeContacts()
+  }
+  storeContacts() {
+    let contactsJson = JSON.stringify(this.contacts)
+    this.http.put('https://wdd430-87992.firebaseio.com/contacts.json', contactsJson, {
+      headers: new HttpHeaders({"Content-Type": "applications/json"}),
+    }).subscribe(()=>{this.contactChangedEvent.next(this.contacts.slice())})
   }
 }

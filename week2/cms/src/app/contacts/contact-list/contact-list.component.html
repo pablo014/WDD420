@@ -1,13 +1,23 @@
 <div class="panel panel-default">
-<div class="row" style="background-color: rgb(243, 243, 243); margin: 5px">
-    <div class="col-xs-12">
-        <div class="pull-left">
-            <h3>Contacts</h3>
+    <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="row">
+                <span class="title pad-left-right">Contacts</span>
+              </div>
+              <div class="row">
+                <div class="input-group pull-left pad-left-right col-xs-7">
+                  <input type="text" #searchBox (keyup)="search(searchBox)"/>
+                  <div class="glyphicon glyphicon-search input-group-addon" (click)="search(searchBox.value)"></div>
+                </div>
+                <div class="pull-right pad-left-right">
+                  <a class="btn btn-success" [routerLink]="['new']">New Contact</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="pull-right">
-            <button class="btn btn-success" style="margin-top: 12px;" [routerLink]="['new']">New Contact</button>
-        </div>
-    </div>
-</div>
-<cms-contact-item *ngFor="let contact of contacts" [contact]="contact" [index]="contact.id"></cms-contact-item>
+      </div>
+<cms-contact-item *ngFor="let contact of contacts | contactsFilter:term" [contact]="contact" [index]="contact.id"></cms-contact-item>
 </div>

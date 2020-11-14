@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { Document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS'
 import { Subject } from 'rxjs'
+import {HttpClient, HttpHeaders} from '@angular/common/http'
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +15,20 @@ export class DocumentService {
   documents: Document[] = []
   maxDocumentId: number;
 
-  constructor() { 
-    this.documents = MOCKDOCUMENTS
-    this.maxDocumentId = this.getMaxId()
+  constructor(private http: HttpClient) { 
+    // this.documents = MOCKDOCUMENTS
+    // this.maxDocumentId = this.getMaxId()
+    this.http.get('https://wdd430-87992.firebaseio.com/documents.json').subscribe(
+      (documents: Document[]) => {
+        this.documents = documents
+        this.maxDocumentId = this.getMaxId()
+        this.documents.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
+        this.documentListChangedEvent.next(this.documents.slice())
+      },
+      (error: any) => {
+        console.log(error)
+      }
+    )
   }
   getContacts() {
     return this.documents.slice()
@@ -40,7 +52,7 @@ export class DocumentService {
        return;
     }
     this.documents.splice(pos, 1);
-    this.documentListChangedEvent.next(this.documents.slice());
+    this.storeDocuments()
  }
  getMaxId(): number {
    var maxId = 0;
@@ -60,8 +72,7 @@ export class DocumentService {
    this.maxDocumentId++
    newDocument.id = this.maxDocumentId.toString()
    this.documents.push(newDocument)
-   var documentsListClone = this.documents.slice()
-   this.documentListChangedEvent.next(documentsListClone)
+   this.storeDocuments()
  }
  updateDocument(originalDocument: Document, newDocument: Document) {
    if(originalDocument == null || originalDocument == undefined || newDocument == undefined || newDocument == null) {
@@ -74,7 +85,14 @@ export class DocumentService {
 
    newDocument.id = originalDocument.id
    this.documents[pos] = newDocument
-   var documentsListClone = this.documents.slice()
-   this.documentListChangedEvent.next(documentsListClone)
+   this.storeDocuments()
+ }
+ storeDocuments() {
+   let documentsJson = JSON.stringify(this.documents)
+   this.http.put('https://wdd430-87992.firebaseio.com/documents.json', documentsJson, {
+     headers: new HttpHeaders({"Content-Type": "applications/json"}),
+   }).subscribe(() => {
+     this.documentListChangedEvent.next(this.documents.slice())
+   })
  }
 }
