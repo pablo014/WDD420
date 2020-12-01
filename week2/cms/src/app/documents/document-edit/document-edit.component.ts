@@ -44,7 +44,7 @@ export class DocumentEditComponent implements OnInit {
   onSubmit(form: NgForm) {
     
     let value = form.value
-    let newDocument = new Document(this.id, value['name'], value['description'], value['url'], null)
+    let newDocument = new Document(this.id, this.id, value['name'], value['description'], value['url'], null)
     if (this.editMode){
       this.documentService.updateDocument(this.originalDocument, newDocument)
     }

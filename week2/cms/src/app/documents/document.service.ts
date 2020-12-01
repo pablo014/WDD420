@@ -18,7 +18,7 @@ export class DocumentService {
   constructor(private http: HttpClient) { 
     // this.documents = MOCKDOCUMENTS
     // this.maxDocumentId = this.getMaxId()
-    this.http.get('https://wdd430-87992.firebaseio.com/documents.json').subscribe(
+    this.http.get('http://localhost:3000/documents').subscribe(
       (documents: Document[]) => {
         this.documents = documents
         this.maxDocumentId = this.getMaxId()
@@ -44,16 +44,26 @@ export class DocumentService {
     return null
   }
   deleteDocument(document: Document) {
+
     if (!document) {
-       return;
+      return;
     }
-    const pos = this.documents.indexOf(document);
+
+    const pos = this.documents.findIndex(d => d.id === document.id);
+
     if (pos < 0) {
-       return;
+      return;
     }
-    this.documents.splice(pos, 1);
-    this.storeDocuments()
- }
+
+    // delete from database
+    this.http.delete('http://localhost:3000/documents/' + document.id)
+      .subscribe(
+        (response: Response) => {
+          this.documents.splice(pos, 1);
+          this.storeDocuments();
+        }
+      );
+  }
  getMaxId(): number {
    var maxId = 0;
    let currentid: number
@@ -65,31 +75,58 @@ export class DocumentService {
    }
    return maxId
  }
- addDocument(newDocument: Document) {
-   if (newDocument == null || newDocument == undefined) {
-     return
-   }
-   this.maxDocumentId++
-   newDocument.id = this.maxDocumentId.toString()
-   this.documents.push(newDocument)
-   this.storeDocuments()
- }
- updateDocument(originalDocument: Document, newDocument: Document) {
-   if(originalDocument == null || originalDocument == undefined || newDocument == undefined || newDocument == null) {
-     return
-   }
-   var pos = this.documents.indexOf(originalDocument)
-   if (pos < 0) {
-     return
-   }
+ addDocument(document: Document) {
+  if (!document) {
+    return;
+  }
 
-   newDocument.id = originalDocument.id
-   this.documents[pos] = newDocument
-   this.storeDocuments()
- }
+  // make sure id of the new Document is empty
+  document.id = '';
+
+  const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+  // add to database
+  this.http.post<{ message: string, document: Document }>('http://localhost:3000/documents',
+    document,
+    { headers: headers })
+    .subscribe(
+      (responseData) => {
+        // add new document to documents
+        this.documents.push(responseData.document);
+        this.storeDocuments();
+      }
+    );
+}
+updateDocument(originalDocument: Document, newDocument: Document) {
+  if (!originalDocument || !newDocument) {
+    return;
+  }
+
+  const pos = this.documents.findIndex(d => d.id === originalDocument.id);
+
+  if (pos < 0) {
+    return;
+  }
+
+  // set the id of the new Document to the id of the old Document
+  newDocument.id = originalDocument.id;
+  newDocument._id = originalDocument._id;
+
+  const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+  // update database
+  this.http.put('http://localhost:3000/documents/' + originalDocument.id,
+    newDocument, { headers: headers })
+    .subscribe(
+      (response: Response) => {
+        this.documents[pos] = newDocument;
+        this.storeDocuments();
+      }
+    );
+}
  storeDocuments() {
    let documentsJson = JSON.stringify(this.documents)
-   this.http.put('https://wdd430-87992.firebaseio.com/documents.json', documentsJson, {
+   this.http.put('http://localhost:3000/documents/', documentsJson, {
      headers: new HttpHeaders({"Content-Type": "applications/json"}),
    }).subscribe(() => {
      this.documentListChangedEvent.next(this.documents.slice())

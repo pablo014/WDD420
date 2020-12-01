@@ -16,7 +16,7 @@ export class ContactService {
   constructor(private http: HttpClient ) { 
     // this.contacts = MOCKCONTACTS
     // this.maxContactId = this.getMaxId()
-    this.http.get('https://wdd430-87992.firebaseio.com/contacts.json').subscribe(
+    this.http.get('http://localhost:3000/contacts').subscribe(
       (contacts: Contact[]) => {
         this.contacts = contacts
         this.maxContactId = this.getMaxId()
@@ -38,16 +38,26 @@ export class ContactService {
     }
     return null
   }
-  deleteContact(contact: Contact) { 
-    if (!contact) {
+  deleteContact(document: Contact) {
+
+    if (!document) {
       return;
-   }
-   const pos = this.contacts.indexOf(contact);
-   if (pos < 0) {
+    }
+
+    const pos = this.contacts.findIndex(d => d.id === document.id);
+
+    if (pos < 0) {
       return;
-   }
-   this.contacts.splice(pos, 1);
-   this.storeContacts()
+    }
+
+    // delete from database
+    this.http.delete('http://localhost:3000/contacts/' + document.id)
+      .subscribe(
+        (response: Response) => {
+          this.contacts.splice(pos, 1);
+          this.storeContacts();
+        }
+      );
   }
   getMaxId(): number {
     var maxId = 0;
@@ -60,30 +70,58 @@ export class ContactService {
     }
     return maxId
   }
-  addContact(newContact: Contact) {
-    if(!newContact) {
-      return
+  addContact(contact: Contact) {
+    if (!contact) {
+      return;
     }
-    this.maxContactId++;
-    newContact.id = this.maxContactId.toString()
-    this.contacts.push(newContact)
-    this.storeContacts()
+
+    // make sure id of the new Document is empty
+    contact.id = '';
+
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // add to database
+    this.http.post<{ message: string, contact: Contact }>('http://localhost:3000/contacts',
+      document,
+      { headers: headers })
+      .subscribe(
+        (responseData) => {
+          // add new document to documents
+          this.contacts.push(responseData.contact);
+          this.storeContacts();
+        }
+      );
   }
-  updateContact(originalContact: Contact, newContact: Contact) {
-    if(!originalContact || ! newContact) {
-      return
+  updateContact(originalDocument: Contact, newDocument: Contact) {
+    if (!originalDocument || !newDocument) {
+      return;
     }
-    var pos = this.contacts.indexOf(originalContact)
+
+    const pos = this.contacts.findIndex(d => d.id === originalDocument.id);
+
     if (pos < 0) {
-      return
+      return;
     }
-    newContact.id = originalContact.id
-    this.contacts[pos] = newContact
-    this.storeContacts()
+
+    // set the id of the new Document to the id of the old Document
+    newDocument.id = originalDocument.id;
+    //newDocument._id = originalDocument._id;
+
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // update database
+    this.http.put('http://localhost:3000/contacts/' + originalDocument.id,
+      newDocument, { headers: headers })
+      .subscribe(
+        (response: Response) => {
+          this.contacts[pos] = newDocument;
+          this.storeContacts();
+        }
+      );
   }
   storeContacts() {
     let contactsJson = JSON.stringify(this.contacts)
-    this.http.put('https://wdd430-87992.firebaseio.com/contacts.json', contactsJson, {
+    this.http.put('http://localhost:3000/contacts', contactsJson, {
       headers: new HttpHeaders({"Content-Type": "applications/json"}),
     }).subscribe(()=>{this.contactChangedEvent.next(this.contacts.slice())})
   }

@@ -15,7 +15,7 @@ export class MessageService {
    }
 
    httpGetMessages() {
-    this.http.get('https://wdd430-87992.firebaseio.com/messages.json').subscribe(
+    this.http.get('http://localhost:3000/messages').subscribe(
       (messages: Message[]) => {
         this.messages = messages
         this.maxMessageId = this.getMaxId()
@@ -29,7 +29,7 @@ export class MessageService {
    }
    storeMessages() {
     let messagesJson = JSON.stringify(this.messages)
-   this.http.put('https://wdd430-87992.firebaseio.com/messages.json', messagesJson, {
+   this.http.put('http://localhost:3000/messages', messagesJson, {
      headers: new HttpHeaders({"Content-Type": "applications/json"}),
    }).subscribe(() => {
      this.messageAdded.emit(this.messages.slice())
@@ -58,8 +58,26 @@ export class MessageService {
     }
     return null
    }
-   addMessage(message: Message) {
-    this.messages.push(message)
-    this.storeMessages()
-   }
+   addMessage(document: Message) {
+    if (!document) {
+      return;
+    }
+
+    // make sure id of the new Document is empty
+    document.id = '';
+
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // add to database
+    this.http.post<{ message: string, document: Message }>('http://localhost:3000/documents',
+      document,
+      { headers: headers })
+      .subscribe(
+        (responseData) => {
+          // add new document to documents
+          this.messages.push(responseData.document);
+          this.storeMessages();
+        }
+      );
+  }
 }
