@@ -15,9 +15,9 @@ export class MessageService {
    }
 
    httpGetMessages() {
-    this.http.get('http://localhost:3000/messages').subscribe(
-      (messages: Message[]) => {
-        this.messages = messages
+    this.http.get<{message: string, messages: Message[]}>('http://localhost:3000/messages').subscribe(
+      (messages) => {
+        this.messages = messages.messages
         this.maxMessageId = this.getMaxId()
         this.messages.sort((a, b) => a.id > b.id ? 1 : b.id > a.id ? -1 : 0)
         this.messageAdded.emit(this.messages.slice())

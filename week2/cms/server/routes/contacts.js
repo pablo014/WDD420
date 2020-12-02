@@ -8,7 +8,7 @@ router.get('/', (req,res,next)=>{
     .populate('group')
     .then(contacts => {
         res.status(200).json({
-            message: 'documents fetched succesfully',
+            message: 'contacts fetched succesfully',
             contacts: contacts
         }).catch((err) => {
             res.status(500).json({

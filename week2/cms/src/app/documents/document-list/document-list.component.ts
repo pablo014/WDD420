@@ -10,14 +10,14 @@ import {DocumentService} from '../document.service'
 })
 export class DocumentListComponent implements OnInit, OnDestroy {
   // @Output() selectedDocumentEvent = new EventEmitter<Document>();
-  subscription: Subscription
+  subscription: Subscription;
 
-  documents: Document[] = []
+  documents: Document[] = [];
   constructor(private documentService: DocumentService) { }
 
 
   ngOnInit(): void {
-    this.documents = this.documentService.getContacts()
+    this.documentService.getContacts()
     console.log(this.documents)
     this.subscription = this.documentService.documentListChangedEvent.subscribe((documents:Document[])=> {
       this.documents = documents

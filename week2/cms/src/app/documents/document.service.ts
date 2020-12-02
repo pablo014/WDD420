@@ -8,40 +8,40 @@ import {HttpClient, HttpHeaders} from '@angular/common/http'
   providedIn: 'root'
 })
 export class DocumentService {
-  documentSelectedEvent = new EventEmitter<Document>()
+  documentSelectedEvent = new EventEmitter<Document>();
   // documentChangedEvent = new EventEmitter<Document[]>()
-  documentListChangedEvent = new Subject<Document[]>()
+  documentListChangedEvent = new Subject<Document[]>();
 
-  documents: Document[] = []
+  documents: Document[] = [];
   maxDocumentId: number;
 
   constructor(private http: HttpClient) { 
     // this.documents = MOCKDOCUMENTS
     // this.maxDocumentId = this.getMaxId()
-    this.http.get('http://localhost:3000/documents').subscribe(
-      (documents: Document[]) => {
-        this.documents = documents
-        this.maxDocumentId = this.getMaxId()
-        this.documents.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
-        this.documentListChangedEvent.next(this.documents.slice())
-      },
-      (error: any) => {
-        console.log(error)
-      }
-    )
+    
   }
   getContacts() {
-    return this.documents.slice()
+    this.http.get<{message: string, documents: Document[]}>('http://localhost:3000/documents').subscribe(
+      (documentsData) => {
+        this.documents = documentsData.documents;
+        
+        this.documents.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0);
+        this.documentListChangedEvent.next(this.documents.slice());
+      },
+      (error: any) => {
+        console.log(error);
+      }
+    )
   }
   getContact(id:string) {
     
     for (let document of this.documents) {
       
       if(document.id == id) {
-        return document
+        return document;
       }
     }
-    return null
+    return null;
   }
   deleteDocument(document: Document) {
 
@@ -64,17 +64,17 @@ export class DocumentService {
         }
       );
   }
- getMaxId(): number {
-   var maxId = 0;
-   let currentid: number
-   for (let document of this.documents) {
-     currentid =  parseInt(document.id)
-     if (currentid > maxId) {
-       maxId = currentid
-     }
-   }
-   return maxId
- }
+//  getMaxId(): number {
+//    var maxId = 0;
+//    let currentid: number
+//    for (let document of this.documents) {
+//      currentid =  parseInt(document.id)
+//      if (currentid > maxId) {
+//        maxId = currentid
+//      }
+//    }
+//    return maxId
+//  }
  addDocument(document: Document) {
   if (!document) {
     return;
@@ -86,7 +86,7 @@ export class DocumentService {
   const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
   // add to database
-  this.http.post<{ message: string, document: Document }>('http://localhost:3000/documents',
+  this.http.post<{ message: string, document: Document }>('http://localhost:3000/documents/',
     document,
     { headers: headers })
     .subscribe(
