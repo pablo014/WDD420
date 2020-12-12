@@ -1,1 +1,19 @@
-<p>chores-details works!</p>
+<div class="panel panel-default" >
+    <div class="row" style="padding-left: 20px; padding-right: 20px; padding-top: 5px;" >
+    <div class="col-xs-12" style="background-color: rgb(243, 243, 243);">
+        <div class="pull-left" >
+            <h4>{{chore?.name}}</h4>
+        </div>
+        <div class="pull-right btn-toolbar">
+            <a routerLink="edit" class="btn btn-primary">Edit</a>
+            <a class="btn btn-danger" (click)="deleteChore()">Delete</a>
+        </div>
+    </div>
+    </div>
+    <div class="row" style="padding: 5px;">
+    <div class="col-xs-12">
+        <p><span style="font-weight: bold;">Details: </span>{{chore?.detail}}</p>
+        <p><span style="font-weight: bold;">Equipment: </span>{{chore?.equipment}}</p>
+    </div>
+    </div>
+</div>

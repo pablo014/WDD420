@@ -11,13 +11,10 @@ export class ChoresService {
 
   choresSelectedEvent = new EventEmitter<Chores>();
   choresChangedEvent = new Subject<Chores[]>()
-  // maxContactId: number
+
 
   chores: Chores[] = []
   constructor(private http: HttpClient ) { 
-    // this.contacts = MOCKCONTACTS
-    // this.maxContactId = this.getMaxId()
-    
   }
   getChores() {
     this.http.get<{message: string, chores: Chores[]}>('http://localhost:3000/chores').subscribe(
@@ -50,6 +47,7 @@ export class ChoresService {
       return;
     }
 
+    console.log(chore.id)
     // delete from database
     this.http.delete('http://localhost:3000/chores/' + chore.id)
       .subscribe(
@@ -75,7 +73,7 @@ export class ChoresService {
       return;
     }
 
-    // make sure id of the new Document is empty
+    // make sure id of the new Chore is empty
     chore.id = '';
 
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
@@ -86,7 +84,7 @@ export class ChoresService {
       { headers: headers })
       .subscribe(
         (responseData) => {
-          // add new document to documents
+          // add new chore to chores
           this.chores.push(responseData.chore);
           this.storeChores();
         }
@@ -103,9 +101,8 @@ export class ChoresService {
       return;
     }
 
-    // set the id of the new Document to the id of the old Document
+    // set the id of the new Chore to the id of the old Chore
     newChore.id = originalChore.id;
-    //newDocument._id = originalDocument._id;
 
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
@@ -114,15 +111,17 @@ export class ChoresService {
       newChore, { headers: headers })
       .subscribe(
         (response: Response) => {
+          console.log('inside put')
           this.chores[pos] = newChore;
           this.storeChores();
         }
       );
   }
   storeChores() {
-    let contactsJson = JSON.stringify(this.chores)
-    this.http.put('http://localhost:3000/chores', contactsJson, {
-      headers: new HttpHeaders({"Content-Type": "applications/json"}),
-    }).subscribe(()=>{this.choresChangedEvent.next(this.chores.slice())})
+    let choresJson = JSON.stringify(this.chores)
+    // this.http.put('http://localhost:3000/chores', choresJson, {
+    //   headers: new HttpHeaders({"Content-Type": "applications/json"}),
+    // }).subscribe(()=>{this.choresChangedEvent.next(this.chores.slice())})
+    this.getChores()
   }
 }

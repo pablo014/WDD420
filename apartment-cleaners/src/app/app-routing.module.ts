@@ -6,7 +6,7 @@ import {ChoresDetailsComponent} from './chores/chores-details/chores-details.com
 import {ChoresEditComponent} from './chores/chores-edit/chores-edit.component'
 
 const appRoutes: Routes = [
-    {path: '', redirectTo: "/chores", pathMatch:'full'},
+    {path: '', redirectTo: "/chores", pathMatch:'full'}, 
     {path: 'chores', component:ChoresComponent, children: [
         {path: 'new', component:ChoresEditComponent},
         {path: ':id', component:ChoresDetailsComponent},

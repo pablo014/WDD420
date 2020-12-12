@@ -1,1 +1,83 @@
-<p>chores-edit works!</p>
+<div class="panel panel-default">
+    <div class="panel-body">
+      <form id="chore-edit" (ngSubmit)="onSubmit(f)" #f="ngForm">
+        <div class="row"> 
+          <div class="col-sm-12 form-group">
+            <label for="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              class="form-control required"
+              size="120"
+              max="120"
+              name="name"
+              [ngModel]="chore?.name"
+              #name
+              required>
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col-sm-12 form-group">
+            <label for="detail">Details:</label>
+            <input
+              type="text"
+              id="detail"
+              class="form-control required"
+              size="120"
+              max="255"
+              name="detail"
+              [ngModel]="chore?.detail"
+              #detail
+              required
+              >
+              <!-- <div *ngIf="f.controls['detail'].touched && !f.controls['detail'].valid" class="alert alert-danger">Enter Some Details About The Job</div> -->
+              <!-- <div class="alert alert-danger">Enter a valid Email address</div> -->
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col-sm-12 form-group">
+            <label for="phone">Necessary Equipment:</label>
+            <input
+              type="text"
+              id="equipment"
+              class="form-control invalid"
+              size="150"
+              max="255"
+              name="equipment"
+              [ngModel]="chore?.equipment"
+              #phone
+              >
+              <!-- <div *ngIf="f.controls['phone'].touched && !f.controls['phone'].valid" class="alert alert-danger">Enter The Required Equipment</div> -->
+              <!-- <div class="alert alert-danger">Enter a valid Email address</div> -->
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col-sm-12 form-group">
+            <label for="jobNum">Job Number:</label>
+            <input
+              type="text"
+              id="jobNum"
+              class="form-control"
+              size="150"
+              max="255"
+              name="jobNum"
+              [ngModel]="chore?.jobNum"
+              #jobNum>
+          </div>
+        </div>
+        <!-- <div class="alert alert-danger" *ngIf="((f.controls['name'].touched && !f.controls['name'].valid) || (f.controls['detail'].touched && !f.controls['detail'].valid))">“The Name and Details fields are required.”</div> -->
+        <!-- <div class="alert alert-danger">“The Name and Email fields are required.”</div> -->
+        <div class="row">
+          <div class="col-xs-12 btn-toolbar">
+            <button class="btn btn-success" type="submit" [disabled]="!f.valid">Save</button>
+            <button class="btn btn-primary" type="button" (click)="onCancel()">Cancel</button>
+          </div>
+        </div>
+  
+      </form>
+    </div>
+  </div>
+  

@@ -9,16 +9,16 @@ import {ChoresService} from './chores.service'
 })
 export class ChoresComponent implements OnInit {
 
-  selectedContact: Chores;
+  selectedChore: Chores;
 
-  constructor(private contactService: ChoresService) { }
+  constructor(private choresService: ChoresService) { }
 
   ngOnInit(): void {   
-    this.contactService.choresSelectedEvent
+    this.choresService.choresSelectedEvent
     .subscribe(
       (chore: Chores) => {
         console.log(chore)
-      this.selectedContact = chore
+      this.selectedChore = chore
     })
   }
 

@@ -1,13 +1,14 @@
+const sequenceGenerator = require('./sequenceGenerator');
 const Chore = require('../models/chores');
 var express = require('express');
 var router = express.Router();
 
 router.get('/', (req,res,next)=>{
-    Contact.find()
+    Chore.find()
     .populate('group')
-    .then(contacts => {
+    .then(chores => {
         res.status(200).json({
-            message: 'contacts fetched succesfully',
+            message: 'chores fetched succesfully',
             chores: chores
         }).catch((err) => {
             res.status(500).json({
@@ -19,21 +20,20 @@ router.get('/', (req,res,next)=>{
 })
 
 router.post('/', (req,res,next)=>{
-    const maxDocumentId = sequenceGenerator.nextId("chores");
+    const maxChoreId = sequenceGenerator.nextId("chores");
 
   const chore = new Chore({
-    id: maxcontactId,
+    id: maxChoreId,
     name: req.body.name,
-    email: req.body.email,
-    phone: req.body.phone,
-    imageUrl: req.body.imageUrl,
-    group: req.body.group,
+    detail: req.body.detail,
+    equipment: req.body.equipment,
+    jobNum: req.body.jobNum,
   });
 
   chore.save()
     .then(createdChore => {
       res.status(201).json({
-        message: 'Contact added successfully',
+        message: 'Chore added successfully',
         chore: createdChore
       });
     })
@@ -49,15 +49,14 @@ router.put('/:id', (req, res, next) => {
     Chore.findOne({ id: req.params.id })
       .then(chore => {
         chore.name = req.body.name;
-        chore.email = req.body.email;
-        chore.imageUrl = req.body.imageUrl;
-        chore.phone = req.body.phone;
-        chore.group = req.body.group;
+        chore.detail = req.body.detail;
+        chore.equipment = req.body.equipment;
+        chore.jobNum = req.body.jobNum;
   
-        Contact.updateOne({ id: req.params.id }, chore)
+        Chore.updateOne({ id: req.params.id }, chore)
           .then(result => {
             res.status(204).json({
-              message: 'Contact updated successfully'
+              message: 'Chore updated successfully'
             })
           })
           .catch(error => {
@@ -69,19 +68,19 @@ router.put('/:id', (req, res, next) => {
       })
       .catch(error => {
         res.status(500).json({
-          message: 'Contact not found.',
-          error: { chore: 'Contact not found'}
+          message: 'Chore not found.',
+          error: { chore: 'Chore not found'}
         });
       });
   });
 
   router.delete("/:id", (req, res, next) => {
-    Contact.findOne({ id: req.params.id })
+    Chore.findOne({ id: req.params.id })
       .then(chore => {
         Chore.deleteOne({ id: req.params.id })
           .then(result => {
             res.status(204).json({
-              message: "Contact deleted successfully"
+              message: "Chore deleted successfully"
             });
           })
           .catch(error => {
